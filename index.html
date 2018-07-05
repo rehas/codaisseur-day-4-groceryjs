@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>TodoList</title>
+    <title>Grocery List</title>
     <style>
         body {
             font-family: Helvetica, Arial, sans-serif;
@@ -11,7 +11,7 @@
         
         .container {
             margin: 20px auto;
-            width: 500px;
+            width: 750px;
             border: 1px solid #e6e6e6;
             border-radius: 3px;
         }
@@ -24,32 +24,40 @@
             padding: 0 0 20px;
         }
         
-        input#new-todo {
-            display: block;
-            width: 478px;
+        input#new-artifact {
+            display: inline-block;
+            width: 70%;
+            border-radius: 3px;
+            border: 1px solid #e6e6e6;
+            padding: 10px;
+            font-size: 18px;
+        }
+        input#howmanyartifacts {
+            display: inline-block;
+            width: 20%;
             border-radius: 3px;
             border: 1px solid #e6e6e6;
             padding: 10px;
             font-size: 18px;
         }
         
-        ul#todolist {
+        ul#artifactlist {
             list-style: none;
             margin: 0;
             padding: 0;
         }
         
-        ul#todolist li {
+        ul#artifactlist li {
             padding: 5px;
             border: 1px solid #e6e6e6;
             border-radius: 3px;
         }
         
-        ul#todolist li:hover {
+        ul#artifactlist li:hover {
             background-color: #e6e6e6;
         }
         
-        ul#todolist .todo.completed label {
+        ul#artifactlist .artifact.completed label {
             text-decoration: line-through;
             color: #999;
         }
@@ -77,46 +85,47 @@
 </head>
 <body>
     <div class="container">
-        <h1>TodoList</h1>
+        <h1>Grocery List</h1>
         
-        <form onsubmit="submitTodo(); return false">
-            <input type="text" id="new-todo" placeholder="What needs to be done?" >
+        <form onsubmit="submitartifact(); return false">
+            <input type="text" id="new-artifact" placeholder="What needs to be bought?" >
+            <input type="text" id="howmanyartifacts" placeholder="How many?" >
         </form>
         
-        <ul id="todolist">
-            <li class="todo">
-                <input id="todo-1" type="checkbox" onchange="toggleDone.bind(this)();">
-                <label for="todo-1">Sweep the floor</label>
+        <ul id="artifactlist">
+            <li class="artifact">
+                <input id="artifact-1" type="checkbox" onchange="toggleDone.bind(this)();">
+                <label for="artifact-1">Milk</label>
             </li>
-            <li class="todo completed" >
-                <input id="todo-2" type="checkbox" checked onchange="toggleDone.bind(this)();">
-                <label for="todo-2">Dust the vases</label>
+            <li class="artifact completed" >
+                <input id="artifact-2" type="checkbox" checked onchange="toggleDone.bind(this)();">
+                <label for="artifact-2">Coffee</label>
             </li>
         </ul>
         <div class="footer">
-            Todo: <span id="todo-count">1</span> •
+            Items: <span id="artifact-count">1</span> •
             Done: <span id="completed-count">0</span> •
             Total: <span id="total-count">1</span>
-            <a href="#" onclick="cleanUpDoneTodos(); return false">Clean up</a>
+            <a href="#" onclick="cleanUpDoneartifacts(); return false">Clean up</a>
         </div>
     </div>
     
     <script>
         function updateCounters() {
-            // Total number of todos
+            // Total number of artifacts
             var totalCount = document.getElementById('total-count');
-            var totalTodos = document.getElementsByClassName("todo").length;
-            totalCount.innerHTML = totalTodos;
+            var totalartifacts = document.getElementsByClassName("artifact").length;
+            totalCount.innerHTML = totalartifacts;
             
-            // Total number of completed todos
+            // Total number of completed artifacts
             var completedCount = document.getElementById('completed-count');
-            var completedTodos = document.getElementsByClassName("completed").length;
-            completedCount.innerHTML = completedTodos;
+            var completedartifacts = document.getElementsByClassName("completed").length;
+            completedCount.innerHTML = completedartifacts;
             
-            // Total number of uncompleted todos
-            var todoCount = document.getElementById('todo-count');
-            var uncompletedTodos = totalTodos - completedTodos;
-            todoCount.innerHTML = uncompletedTodos;
+            // Total number of uncompleted artifacts
+            var artifactCount = document.getElementById('artifact-count');
+            var uncompletedartifacts = totalartifacts - completedartifacts;
+            artifactCount.innerHTML = uncompletedartifacts;
         }
         updateCounters();
         function toggleDone() {
@@ -125,23 +134,23 @@
             // check the checked status of the checkbox
             if (checkbox.checked) {
                 // the "completed" class is set on the parent element, the <li>
-                    checkbox.parentElement.className = "todo completed";
+                    checkbox.parentElement.className = "artifact completed";
                 } else {
-                    checkbox.parentElement.className = "todo";
+                    checkbox.parentElement.className = "artifact";
                 }
                 
                 updateCounters();
             }
             
-            function createTodo(title) {
+            function createartifact(title) {
                 // create a list item
                 var listItem = document.createElement("li");
-                listItem.className = "todo";
+                listItem.className = "artifact";
                 
                 // create a checkbox and add it to the list item
                 var checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
-                checkbox.id = "todo-" + nextTodoId();
+                checkbox.id = "artifact-" + nextartifactId();
                 checkbox.checked = false;
                 // assign the toggleDone function on the checkbox's onchange event
                 checkbox.onchange = toggleDone.bind(checkbox);
@@ -159,34 +168,34 @@
                 
                 // add the list item with the checkbox, the whitespace and the label to
                 // the list
-                var list = document.getElementById("todolist");
+                var list = document.getElementById("artifactlist");
                 list.appendChild(listItem);
             }
             
-            // Every todo has it's own id so we can add that to the corresponding label's
+            // Every artifact has it's own id so we can add that to the corresponding label's
             // "for" attribute to make sure that when we click the label, the checkbox
             // toggles
-            function nextTodoId() {
-                return document.getElementsByClassName("todo").length + 1;
+            function nextartifactId() {
+                return document.getElementsByClassName("artifact").length + 1;
             }
             
             
-            function submitTodo() {
-                var inputField = document.getElementById("new-todo");
-                var newTodoTitle = inputField.value;
-                createTodo(newTodoTitle);
+            function submitartifact() {
+                var inputField = document.getElementById("new-artifact");
+                var newartifactTitle = inputField.value;
+                createartifact(newartifactTitle);
                 
                 // reset the value of the inputField to make it empty and
-                // ready to create new todos
+                // ready to create new artifacts
                 inputField.value = null;
                 
                 updateCounters();
             }
-            function cleanUpDoneTodos() {
-                var list = document.getElementById("todolist");
+            function cleanUpDoneartifacts() {
+                var list = document.getElementById("artifactlist");
                 var doneItems = document.getElementsByClassName("completed");
                 
-                // Reverse loop through the done todo items so we can remove them without changing the index of the remaining items when we remove them
+                // Reverse loop through the done artifact items so we can remove them without changing the index of the remaining items when we remove them
                 for (var i = doneItems.length; i > 0; i--) {
                     list.removeChild(doneItems[i-1]);
                 }
