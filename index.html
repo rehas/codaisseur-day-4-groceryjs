@@ -39,6 +39,7 @@
             border: 1px solid #e6e6e6;
             padding: 10px;
             font-size: 18px;
+            text-align: center;
         }
         
         ul#artifactlist {
@@ -81,128 +82,225 @@
         .footer a:hover {
             text-decoration: underline;
         }
+        
+        .edit{
+            float: right;
+            margin-right: 1%;
+            width: 2%;
+            text-align: center; 
+        }
+        .count{
+            float: right;
+            margin-right: 10%;
+            width: 10%;
+            text-align: center; 
+        }
+        #hidden-button{
+            display: none;
+            visibility: hidden;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Grocery List</h1>
         
-        <form onsubmit="submitartifact(); return false">
+        <form id="formGr" onsubmit="submitartifact(); return false">
             <input type="text" id="new-artifact" placeholder="What needs to be bought?" >
-            <input type="text" id="howmanyartifacts" placeholder="How many?" >
+            <input type="text" id="howmanyartifacts" placeholder="How many?" value="1" >
+            <input id= "hidden-button" type="submit" value="submit" />
         </form>
         
         <ul id="artifactlist">
             <li class="artifact">
                 <input id="artifact-1" type="checkbox" onchange="toggleDone.bind(this)();">
                 <label for="artifact-1">Milk</label>
+                <span class="edit">E </span>
+                <span class="count" > 1</span>
             </li>
             <li class="artifact completed" >
                 <input id="artifact-2" type="checkbox" checked onchange="toggleDone.bind(this)();">
                 <label for="artifact-2">Coffee</label>
+                <span class="edit">E </span>
+                <span class="count" > 1</span>
             </li>
         </ul>
         <div class="footer">
             Items: <span id="artifact-count">1</span> •
             Done: <span id="completed-count">0</span> •
-            Total: <span id="total-count">1</span>
+            List Total: <span id="total-count">1</span> •••••••••••••••••••
+            Bag Size: <span id="bag-size">2</span> •
             <a href="#" onclick="cleanUpDoneartifacts(); return false">Clean up</a>
         </div>
+        
+        <div class="editMode">
+        <input type="text" placeholder="">
+    </div>
+
+
     </div>
     
     <script>
+        
+        
+        function editEventListeners(){
+            var editButtonList = document.querySelectorAll(".edit");
+            console.log(editButtonList);
+            var editButtonArray = Array.from(editButtonList);
+
+            editButtonArray.forEach(function(element){
+                element.addEventListener("click", 
+                    function(){
+                        console.log(element);
+
+
+                    });
+            });
+                 
+            
+        };
+        
+        
         function updateCounters() {
             // Total number of artifacts
             var totalCount = document.getElementById('total-count');
             var totalartifacts = document.getElementsByClassName("artifact").length;
-            totalCount.innerHTML = totalartifacts;
+            //let totalNumber =0;
+            //totalArtifactsArray = Array.from(totalartifacts);
             
-            // Total number of completed artifacts
-            var completedCount = document.getElementById('completed-count');
-            var completedartifacts = document.getElementsByClassName("completed").length;
-            completedCount.innerHTML = completedartifacts;
+            // totalArtifactsArray.forEach(element => {
+                //     console.log("we're looping the array for counts ",element);
+                //     console.log(element.children[2].innerHTML);
+                
+                //     totalNumber += parseInt(element.children[2].innerHTML);
+                // });    
+                
+                totalCount.innerHTML = totalartifacts;
+                
+                
+                var bagSize = document.getElementById('bag-size');
+                var allArtifacts = document.getElementsByClassName("artifact");
+                let totalNumber =0;
+                totalArtifactsArray = Array.from(allArtifacts);
+                
+                totalArtifactsArray.forEach(element => {
+                    console.log("we're looping the array for counts ",element);
+                    console.log(element.children[3].innerHTML);
+                    
+                    totalNumber += parseInt(element.children[3].innerHTML);
+                });    
+                
+                bagSize.innerHTML = totalNumber;
+                
+                // Total number of completed artifacts
+                var completedCount = document.getElementById('completed-count');
+                var completedartifacts = document.getElementsByClassName("completed").length;
+                completedCount.innerHTML = completedartifacts;
+                
+                // Total number of uncompleted artifacts
+                var artifactCount = document.getElementById('artifact-count');
+                var uncompletedartifacts = totalartifacts - completedartifacts;
+                artifactCount.innerHTML = uncompletedartifacts;
+                editEventListeners();
+            }
+            updateCounters();
             
-            // Total number of uncompleted artifacts
-            var artifactCount = document.getElementById('artifact-count');
-            var uncompletedartifacts = totalartifacts - completedartifacts;
-            artifactCount.innerHTML = uncompletedartifacts;
-        }
-        updateCounters();
-        function toggleDone() {
-            var checkbox = this;
-            
-            // check the checked status of the checkbox
-            if (checkbox.checked) {
-                // the "completed" class is set on the parent element, the <li>
-                    checkbox.parentElement.className = "artifact completed";
-                } else {
-                    checkbox.parentElement.className = "artifact";
+            function toggleDone() {
+                var checkbox = this;
+                
+                // check the checked status of the checkbox
+                if (checkbox.checked) {
+                    // the "completed" class is set on the parent element, the <li>
+                        checkbox.parentElement.className = "artifact completed";
+                    } else {
+                        checkbox.parentElement.className = "artifact";
+                    }
+                    
+                    updateCounters();
                 }
                 
-                updateCounters();
-            }
-            
-            function createartifact(title) {
-                // create a list item
-                var listItem = document.createElement("li");
-                listItem.className = "artifact";
-                
-                // create a checkbox and add it to the list item
-                var checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.id = "artifact-" + nextartifactId();
-                checkbox.checked = false;
-                // assign the toggleDone function on the checkbox's onchange event
-                checkbox.onchange = toggleDone.bind(checkbox);
-                listItem.appendChild(checkbox);
-                
-                // create some whitespace to put between the checkbox and the label
-                var space = document.createTextNode(" ");
-                listItem.appendChild(space);
-                
-                // create a label that holds the title and add it to the list item
-                var label = document.createElement("label");
-                label.htmlFor = checkbox.id;
-                label.innerHTML = title;
-                listItem.appendChild(label);
-                
-                // add the list item with the checkbox, the whitespace and the label to
-                // the list
-                var list = document.getElementById("artifactlist");
-                list.appendChild(listItem);
-            }
-            
-            // Every artifact has it's own id so we can add that to the corresponding label's
-            // "for" attribute to make sure that when we click the label, the checkbox
-            // toggles
-            function nextartifactId() {
-                return document.getElementsByClassName("artifact").length + 1;
-            }
-            
-            
-            function submitartifact() {
-                var inputField = document.getElementById("new-artifact");
-                var newartifactTitle = inputField.value;
-                createartifact(newartifactTitle);
-                
-                // reset the value of the inputField to make it empty and
-                // ready to create new artifacts
-                inputField.value = null;
-                
-                updateCounters();
-            }
-            function cleanUpDoneartifacts() {
-                var list = document.getElementById("artifactlist");
-                var doneItems = document.getElementsByClassName("completed");
-                
-                // Reverse loop through the done artifact items so we can remove them without changing the index of the remaining items when we remove them
-                for (var i = doneItems.length; i > 0; i--) {
-                    list.removeChild(doneItems[i-1]);
+                function createartifact(title, count) {
+                    // create a list item
+                    var listItem = document.createElement("li");
+                    listItem.className = "artifact";
+                    
+                    // create a checkbox and add it to the list item
+                    var checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.id = "artifact-" + nextartifactId();
+                    checkbox.checked = false;
+                    // assign the toggleDone function on the checkbox's onchange event
+                    checkbox.onchange = toggleDone.bind(checkbox);
+                    listItem.appendChild(checkbox);
+                    
+                    // create some whitespace to put between the checkbox and the label
+                    var space = document.createTextNode(" ");
+                    listItem.appendChild(space);
+                    
+                    // create a label that holds the title and add it to the list item
+                    var label = document.createElement("label");
+                    label.htmlFor = checkbox.id;
+                    console.log(title);
+                    label.innerHTML = title;
+                    console.log(label.innerHTML);
+                    listItem.appendChild(label);
+                    
+                    var editButton = document.createElement("span");
+                    //label.htmlFor = checkbox.id;
+                    editButton.className ="edit";
+                    editButton.innerHTML = "E";
+                    listItem.appendChild(editButton);
+                    console.log(listItem);
+                    
+                    
+                    var labelCount = document.createElement("span");
+                    //label.htmlFor = checkbox.id;
+                    labelCount.className ="count";
+                    labelCount.innerHTML = count;
+                    listItem.appendChild(labelCount);
+                    console.log(listItem);
+                    
+                    // add the list item with the checkbox, the whitespace and the label to
+                    // the list
+                    var list = document.getElementById("artifactlist");
+                    list.appendChild(listItem);
                 }
                 
-                updateCounters();
-            }
-        </script>
-        
-    </body>
-    </html>
+                // Every artifact has it's own id so we can add that to the corresponding label's
+                // "for" attribute to make sure that when we click the label, the checkbox
+                // toggles
+                function nextartifactId() {
+                    return document.getElementsByClassName("artifact").length + 1;
+                }
+                
+                
+                function submitartifact() {
+                    var inputField = document.getElementById("new-artifact");
+                    var inputCount = document.getElementById("howmanyartifacts"); 
+                    var newartifactTitle = inputField.value;
+                    var newArtifactCount = inputCount.value;
+                    console.log(newartifactTitle, newArtifactCount);
+                    createartifact(newartifactTitle, newArtifactCount);
+                    
+                    // reset the value of the inputField to make it empty and
+                    // ready to create new artifacts
+                    //inputField.value = null;
+                    
+                    updateCounters();
+                }
+                
+                function cleanUpDoneartifacts() {
+                    var list = document.getElementById("artifactlist");
+                    var doneItems = document.getElementsByClassName("completed");
+                    
+                    // Reverse loop through the done artifact items so we can remove them without changing the index of the remaining items when we remove them
+                    for (var i = doneItems.length; i > 0; i--) {
+                        list.removeChild(doneItems[i-1]);
+                    }
+                    
+                    updateCounters();
+                }
+            </script>
+            
+        </body>
+        </html>
